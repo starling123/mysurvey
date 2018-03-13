@@ -1,0 +1,40 @@
+<html>
+<body>
+{% include "menu.html" %}
+<h1>Enquête Id: {{survey.id}}  {{survey.name}}</h1>
+<div class=="submenu">
+	<a href="/admin?command=SURVEY&id={{survey.id}}">basisgegevens</a> 
+	| vragen
+	| <a href="/admin?command=SURVEY_PARTICIPANTS&survey_id={{survey.id}}">Uitnodigen</a>
+</div>
+<hr/>
+<form action="/admin" method="get">
+    <input type="hidden" name="survey_id" value="{{survey.id}}"/>
+	<button type="submit" name="command" value="NEW_QUESTION">Nieuwe vraag</button>
+</form>
+
+<form method="get" action="/admin">
+<input type="hidden" name="command" value="SAVE_SURVEY"/>
+<input type="hidden" name="id" value="{{survey.id}}"/>
+<table width="100%" border="1">
+<thead><tr><th>Id</th><th>Volgnummer</th><th>Vraag</th><th>Subvraag</th><th>Acties</th></tr></thead>
+{% for q in questions %}
+<tr>
+<td>{{q.id}}</td>
+<td>{{q.ordernumber}}</td>
+<td>{{q.question}}</td>
+<td>{{q.subquestion}}</td>
+<td>
+	<a href="/admin?command=QUESTION&survey_id={{survey.id}}&id={{q.id}}">Wijzigen</a>| 
+	<a href="/admin?command=UP_QUESTION&question_id={{q.id}}&survey_id={{survey.id}}&ordernumber={{q.ordernumber}}">Omhoog</a>|
+	<a href="/admin?command=DOWN_QUESTION&question_id={{q.id}}&survey_id={{survey.id}}&ordernumber={{q.ordernumber}}">Omlaag</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+
+<hr/>
+</form>
+
+</body>
+</html>

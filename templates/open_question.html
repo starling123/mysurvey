@@ -1,0 +1,17 @@
+<html>
+<style>
+{% include "mysurvey.css" %}
+</style>
+<body>
+<div class="question"><label class="question-label">Vraag {{question.id}}: {{question.question}}</label></div>
+<form action="process_response" method="get"> 
+<input type="hidden" name="session_id" value="{{session_id}}"/>
+<div class="answer">
+<textarea rows="8" cols="100" name="{{question.id}}">{{response}}</textarea>
+</div>
+<div class="buttons">
+<input type="submit" name="back" value="Vorige"/><input class="next" type="submit"  name="next" value="Volgende" />
+</div>
+<form>
+</body>
+</html>

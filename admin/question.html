@@ -1,0 +1,70 @@
+<html>
+<body>
+{% include "menu.html" %}
+<h1>Vraag Id: {{question.id}}</h1>
+<div class=="submenu">
+basisgegevens | <a href="/admin?command=QUESTION_OPTIONS&id={{question.id}}">opties</a> | <a href="/admin?command=SURVEY_QUESTIONS&survey_id={{question.survey_id}}">enquête</a>
+</div>
+<hr/>
+<form method="get" action="/admin">
+<input type="hidden" name="survey_id" value="{{question.survey_id}}"/>
+<input type="hidden" name="id" value="{{question.id}}"/>
+<!-- 
+-->
+<table width="100%">
+<tr>
+   <td>Type</td>
+   <td>
+   		<select name="type">
+   			<option value="1" {%- if question.type == "1" -%}selected="selected"{%- endif -%}>Kies één</option>
+   			<option value="M" {%- if question.type == "M" -%}selected="selected"{%- endif -%}>Kies meerdere</option>
+   			<option value="JN" {%- if question.type == "JN" -%}selected="selected"{%- endif -%}>Ja of Nee</option>
+   			<option value="O" {%- if question.type == "O" -%}selected="selected"{%- endif -%}>Open vraag</option>
+   			<option value="START" {%- if question.type == "START" -%}selected="selected"{%- endif -%}>Begintekst</option>
+   			<option value="END" {%- if question.type == "END" -%}selected="selected"{%- endif -%}>Eindtekst</option>
+   			<option value="SECTION" {%- if question.type == "SECTION" -%}selected="selected"{%- endif -%}>Nieuw onderdeel tekst</option>
+   		</select>
+   </td>
+</tr>
+<tr>
+   <td>Volgnummer</td>
+   <td><input style="width:400px" name="ordernumber" value="{{question.ordernumber}}"></input></td>
+</tr>
+<tr>
+   <td>Vraag</td>
+   <td><textarea style="width:400px" name="question">{{question.question}}</textarea></td>
+</tr>
+<tr>
+   <td>Subvraag</td>
+   <td><textarea style="width:400px" name="subquestion">{{question.subquestion}}</textarea></td>
+</tr>
+<tr>
+   <td>Omschrijving</td>
+   <td><textarea style="width:400px" name="description">{{question.description}}</textarea></td>
+</tr>
+<tr>
+   <td>Voorwaarde vraag Id</td>
+   <td><input style="width:400px" name="condition_question_id" value="{{question.condition_question_id}}"></input></td>
+</tr>
+<tr>
+   <td>Voorwaarde</td>
+   <td><textarea style="width:400px" name="condition_expression">{{question.condition_expression}}</textarea></td>
+</tr>
+
+</table>
+
+<hr/>
+<button type="submit" name="command" value="SAVE_QUESTION">Opslaan</button>
+<button type="submit" name="command" value="NEW_QUESTION">Nieuw</button>
+<button type="submit" name="command" value="DELETE_QUESTION" onclick="return confirm('Weet u het zeker?')">Verwijderen</button>
+{% if question.ordernumber > 1 %}
+<a href="/admin?command=QUESTION&id={{doQuery('SELECT id FROM question WHERE survey_id = %(s)s and ordernumber = %(n)s-1', {'s':question.survey_id, 'n':question.ordernumber})[0].id }}">Vorige vraag</a>
+{% endif %}
+{% if doQuery("SELECT max(ordernumber) as m FROM question WHERE survey_id = %(s)s", {'s':question.survey_id})[0]["m"] > question.ordernumber %}
+| <a href="/admin?command=QUESTION&id={{doQuery('SELECT id FROM question WHERE survey_id = %(s)s and ordernumber = %(n)s+1', {'s':question.survey_id, 'n':question.ordernumber})[0].id }}">Volgende vraag</a>
+{% endif %}
+</form>
+<hr/>
+<iframe width="600" height="400" src="/test_question?question_id={{question.id}}"></iframe>
+</body>
+</html>

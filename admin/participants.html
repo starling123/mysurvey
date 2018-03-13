@@ -1,0 +1,28 @@
+<html>
+<body>
+{% include "menu.html" %}
+<hr/>
+<h1>Deelnemers</h1>
+
+<form action="/admin" method="get">
+<table width="100%" border="1">
+<label>Enquête Id</label><input name="survey_id" value="1"/>
+<thead>
+<tr><th>E-mail</th><th>Voornaam</th><th>Achternaam</th><th>Acties</th></tr>
+</thead>
+{% for p in participants %}
+<tr>
+  <td><input type="email" size="50" name="email:{{p.id}}" value="{{p.email}}"/></td>
+  <td><input name="firstname:{{p.id}}" value="{{p.firstname}}"/></td>
+  <td><input name="lastname:{{p.id}}" value="{{p.lastname}}"/></td>
+  <td>
+  	<a href="/admin?command=DELETE_PARTICIPANT&id={{p.id}}" onclick="return confirm('Weet u het zeker?')">Verwijderen</a>
+  </td>
+</tr>
+{% endfor %}
+</table>
+<button type="submit" name="command" value="UPDATE_PARTICIPANTS">Opslaan</button>
+<button type="submit" name="command" value="NEW_PARTICIPANT">Toevoegen</button>
+</form>
+</body>
+</html>

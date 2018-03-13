@@ -1,0 +1,29 @@
+<html>
+<body>
+{% include "menu.html" %}
+<h1>Enquêtes</h1>
+
+<table width="100%" border="1">
+<thead>
+<tr>
+  <th>Id</th>
+  <th>Naam</th>
+  <th>Actie</th>
+</tr>
+</thead>
+<tbody>
+<form action="/admin" method="get">
+	<button type="submit" name="command" value="NEW_SURVEY">Nieuwe enquête</button>
+</form>
+{% for s in surveys %}
+<tr>
+<td>{{s.id}}</td><td>{{s.name}}</td>
+<td>
+	<a href="/admin?command=SURVEY&id={{s.id}}">Wijzigen</a>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</body>
+</html>

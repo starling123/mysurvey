@@ -1,0 +1,14 @@
+<html>
+<body>
+<h1>{{question.question}}</h1>
+<form action="process_response" method="get">
+<input type="hidden" name="session_id" value="{{session_id}}"/>
+<input type="submit"  name="back" value="Terug"/>
+</form>
+
+<form action="report" method="get" target="report">
+<input type="hidden" name="session_id" value="{{session_id}}"/>
+<input type="submit" value="printen"/>
+</form>
+</body>
+<html>

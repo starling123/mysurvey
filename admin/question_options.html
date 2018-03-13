@@ -1,0 +1,31 @@
+<html>
+<body>
+{% include "menu.html" %}
+<h1>Vraag Id: {{question.id}}</h1>
+<div class=="submenu">
+<a href="/admin?command=QUESTION&id={{question.id}}">basisgegevens</a> | opties | <a href="/admin?command=SURVEY_QUESTIONS&survey_id={{question.survey_id}}">enquête</a>
+</div>
+<hr/>
+<form method="get" action="/admin">
+<input type="hidden" name="id" value="{{question.id}}"/>
+<table width="100%" border="1">
+<thead><tr><th>Volgnummer</th><th>Waarde</th><th>Acties</th></tr></thead>
+{% for o in options %}
+<tr>
+<td>{{o.ordernumber}}</td>
+<td><input style="width:600px" name="option:{{o.id}}" value="{{o.value}}"/></td>
+<td>
+	<a href="/admin?command=DELETE_OPTION&option_id={{o.id}}&question_id={{question.id}}">Verwijderen</a>|
+	<a href="/admin?command=UP_OPTION&option_id={{o.id}}&question_id={{question.id}}&ordernumber={{o.ordernumber}}">Omhoog</a>|
+	<a href="/admin?command=DOWN_OPTION&option_id={{o.id}}&question_id={{question.id}}&ordernumber={{o.ordernumber}}">Omlaag</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+<button type="submit" name="command" value="UPDATE_OPTIONS">Opslaan</button>
+<button type="submit" name="command" value="ADD_OPTION">Toevoegen</button>
+<hr/>
+</form>
+
+</body>
+</html>

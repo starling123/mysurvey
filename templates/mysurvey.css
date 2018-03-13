@@ -1,0 +1,73 @@
+html, body {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.question {
+   position: absolute;
+   border-radius: 5px;
+   top:0;
+   right: 0;
+   left: 0;
+   border-style: solid;
+   border-width: 1;
+   border-color: black; 
+   background-color: lightblue;
+   margin:auto;
+   padding:20px;
+}
+
+.answer {
+   position: absolute;
+   top: 60;
+   border-radius: 5px;
+   right: 0;
+   left: 0;
+   border-style: solid;
+   border-width: 0;
+   border-color: black; 
+   margin:auto;
+   padding:20px;
+}
+
+.option-text {
+  margin-left : 15px;
+  padding : 4px;
+}
+
+input[type="radio"] {
+  margin: 10px;
+}
+
+input[type="checkbox"] {
+  margin: 10px;
+}
+
+input[type="submit"] {
+  border-radius: 8px;
+  margin: auto;
+  padding: 10px;
+  width : 100px;
+  text-align: center;
+}
+
+
+.buttons {
+   position: absolute;
+   border-radius: 5px;
+   right: 0;
+   left: 0;
+   border-style: solid;
+   border-width: 1;
+   border-color: black; 
+   background-color: lightblue;
+   margin:auto;
+   padding:20px;
+   bottom: 0;
+}
+
+
+.next { 
+  float: right;
+}

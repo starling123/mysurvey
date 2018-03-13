@@ -1,0 +1,19 @@
+version: '2'
+services:
+  mysurvey:
+    image: mysurvey
+    ports:
+      - "80:8080"
+    volumes:
+      - .:/app
+
+  mysurveydb: 
+    image: mariadb
+    hostname: mysurveydb
+    container_name: mysurveydb
+    environment:
+      MYSQL_ROOT_PASSWORD: mysurvey
+    volumes:
+      - ./data:/var/lib/mysql
+    ports:
+      - "3306:3306"  

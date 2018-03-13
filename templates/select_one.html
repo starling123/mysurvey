@@ -1,0 +1,33 @@
+<html>
+<style>
+{% include "mysurvey.css" %}
+</style>
+<body>
+<div class="question">
+	<label class="question-label">Vraag {{vraagnr}}: {{question.question}}: </label>
+</div>
+
+<div class="answer">
+<form action="process_response" method="get"> 
+<input type="hidden" name="session_id" value="{{session_id}}"/>
+{% for option in options %}
+{% if option.id == response|int %}
+<div><input type="radio" name="{{question.id}}" value="{{option.id}}" checked="checked"><span class="option-text">{{option.value}} {{question.subquestion}}</span></input></div>
+{% else %}
+<div><input type="radio" name="{{question.id}}" value="{{option.id}}"><span class="option-text">{{option.value}} {{question.subquestion}}</span></input></div>
+{% endif %}
+{% endfor %}
+</div>
+
+
+<div class="buttons">
+{% set vraagnr = doQuery("SELECT COUNT(*) as c FROM question WHERE survey_id = %(s)s AND ordernumber <= %(n)s",{'s': question.survey_id, 'n':question.ordernumber})[0].c %}
+{% set totaal = doQuery("SELECT COUNT(*) as m FROM question WHERE survey_id = %(s)s",{'s': question.survey_id})[0].m %}
+
+<div>Voortgang: {{vraagnr * 100 // totaal }}%</div>
+
+<input type="submit" name="back" value="Vorige"/><input class="next" type="submit"  name="next" value="Volgende" />
+</div>
+<form>
+</body>
+</html>

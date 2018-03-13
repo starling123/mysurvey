@@ -1,0 +1,37 @@
+<html>
+<body>
+<table width="100%" border="1">
+<thead>
+<tr>
+	<th>VraagId</th>
+	<th>Vraag</th>
+	<th>Opties</th>
+</tr>
+</thead>
+{% for r in data %}
+
+{% if r["q_type"] == "JN" %}
+<tr>
+  <td>{{r["q_id"]}}</td>
+  <td>{{r["q_question"]}}</td>
+  <td>{{r["o_value"]}}</td>
+{% endif %}
+
+{% if r["q_type"]|int == 1 and r["r_value"]|int == r["o_id"] %}
+<tr>
+  <td>{{r["q_id"]}}</td>
+  <td>{{r["q_question"]}}</td>
+  <td>{{r["o_value"]}}</td>
+{% endif %}
+
+{% if r["q_type"] == "M" %}
+<tr>
+  <td>{{r["q_id"]}}</td>
+  <td>{{r["q_question"]}}</td>
+  <td>{{r["o_value"]}}</td>
+{% endif %}
+
+{% endfor %}
+</table>
+</body>
+</html>

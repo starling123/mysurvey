@@ -1,0 +1,32 @@
+<html>
+<body>
+{% include "menu.html" %}
+<h1>Enquête Id: {{survey.id}}  {{survey.name}}</h1>
+<div class=="submenu">
+	<a href="/admin?command=SURVEY&id={{survey.id}}">basisgegevens</a>
+	| <a href="/admin?command=SURVEY_QUESTIONS&survey_id={{survey.id}}">vragen</a> 
+	| Uitnodigen
+</div>
+<hr/>
+<form action="/admin" method="get">
+<table width="100%" border="1">
+<input type="hidden" name="survey_id" value="1"/>
+<thead>
+<tr><th>E-mail</th><th>Voornaam</th><th>Achternaam</th><th>Uitgenodigd</th><th>Uitnodigen</th></tr>
+</thead>
+{% for p in participants %}
+<tr>
+  <td>{{p.email}}</td>
+  <td>{{p.firstname}}</td>
+  <td>{{p.lastname}}</td>
+  <td>{{p.survey_id != None}}</td>
+  <td><input type="checkbox" name="invitees" value="{{p.id}}"/></td>
+</tr>
+{% endfor %}
+</table>
+<button type="submit" name="command" value="INVITE">Uitnodigen</button>
+</form>
+
+{{participants}}
+</body>
+</html>
