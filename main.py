@@ -4,6 +4,16 @@ import database as db
 import json
 import admin
 from util import render
+from cherrypy.lib import auth_basic
+
+USERS = {'admin': 'silo123'}
+
+def validate_password(realm, username, password):
+    if username in USERS and USERS[username] == password:
+       return True
+    return False
+
+
 #----------------------------------------------------------------------------
 def get_template(type):
     type = type.strip()
@@ -133,7 +143,8 @@ class MySurvey(object):
 #----------------------------------------------------------------------------
     @cherrypy.expose
     def index(self):
-        return admin.surveys()
+        raise cherrypy.HTTPRedirect("/admin?command=SURVEYS")
+        
 #----------------------------------------------------------------------------
     @cherrypy.expose
     def start_survey(self, id, survey_id):
@@ -213,4 +224,15 @@ class MySurvey(object):
 #----------------------------------------------------------------------------
 if __name__ == '__main__':
     cherrypy.server.socket_host = '0.0.0.0'
-    cherrypy.quickstart(MySurvey())
+    
+    conf = {
+       '/admin': {
+           'tools.auth_basic.on': True,
+           'tools.auth_basic.realm': 'localhost',
+           'tools.auth_basic.checkpassword': validate_password
+        }
+    }
+
+    cherrypy.quickstart(MySurvey(), '/', conf)
+
+    #cherrypy.quickstart()
