@@ -1,5 +1,6 @@
 <html>
 <head>
+<meta charset="UTF-8">
 <style>
 .question {
    border-radius: 5px;
@@ -49,52 +50,141 @@ table, th, td {
    border-collapse: collapse;
    border-color: blue;
 }
+
+.subheader {
+  background-color :#ccccff;
+}
+
 </style>
+<script>
+function dosubmit(nq) {
+	document.getElementById("cq").value = nq;
+	document.forms[0].submit();
+}
+
+function movetoquestion() {
+// 	var el = document.getElementById("{{cq}}");
+	location.hash = "#{{cq}}"
+// 	document.body.scrollTop = sp;
+}
+</script>
 </head>
-<body>
+<body onload="movetoquestion()">
+<div class="header">
+<h1>Enquête gemeenteopbouw Silo 2018</h1>
+</div>
+<form action="/save_responses" method="post">
+<input type="hidden" name="session_id" value="{{session_id}}"/>
+<input id="cq" type="hidden" name="cq" value="{{cq}}"/>
+{% set ns = namespace(vraagtekst="", anders=1, onderdeelA=0, onderdeelB=0, onderdeelC=0) %}
 {% for q in survey|groupby('vraagnummer') %}
+{% if q[1][0].onderdeel == "A" and ns.onderdeelA == 0 %}
+{% set ns.onderdeelA = 1 %}
+<div class="section-header">
+<h2>Deel A - Vragen over jou zelf</h2>
+</div>
+{% endif %}
+{% if q[1][0].onderdeel == "B" and ns.onderdeelB == 0 %}
+{% set ns.onderdeelB = 1 %}
+<div class="section-header">
+<h2>Deel B - Vragen met betrekking tot jouw relatie met Silo</h2>
+</div>
+{% endif %}
+{% if q[1][0].onderdeel == "C" and ns.onderdeelC == 0 %}
+{% set ns.onderdeelC = 1 %}
+<div class="section-header">
+<p>
+Dank voor de beantwoording van deze vragen!
+Je bent aan het eind gekomen van (het algemene deel van) de enquête. 
+Het deel wat nu volgt hoef je dus niet in te vullen, je kan hier ook stoppen. 
+Uiteraard vinden wij het heel fijn als je wél doorgaat naar het volgende deel van de enquête. 
+</p>
+<p>
+De vragen, die nu komen gaan over jouw geloof. Ze zijn uiteraard anoniem, net als de andere vragen. Het gaat ons hier niet om inzicht in jouw persoonlijk geloof maar om wat naar voren komt aan persoonlijk geloof in de hele gemeente. Om zo te zien wat daarin als gemeenschappelijk ervaren wordt of juist niet. En of dat wat we doen in Silo aansluit bij onze persoonlijke ervaringen. Daarover zouden we in Silo met elkaar kunnen doorpraten.
+</p>
+<p>
+Het zijn vragen waar je waarschijnlijk wel even voor moet gaan zitten. Mocht je onderweg toch niet verder willen, dan is dat geen enkel probleem. Dan stop je en vervallen je antwoorden van dit deel. Je kunt natuurlijk ook rustig een vraag overslaan. 
+Als je het ervoor gaat is onze dank zeer groot!
+</p>
+<h2>Deel C - Vragen over jouw geloof en hoe je dat beleeft</h2>
+</div>
+{% endif %}
+
+
 <div id="{{q[0]}}" class="question">
-<div class="question-text">Vraag {{q[0]}}: {{q[1][0].vraag}}</div>
+<div class="question-text">Vraag {{q[0]}}: {{q[1][0].vraag}}  {{q[1][0].toelichting}}</div>
 {% set v = q[1][0] %}
 {% if v.type == "1" and q[1]|length == 1 %}
 <table>
 	{% for k in v|sort if k > "optie0" and k < "optie99" and v[k] != ""%}
-	<tr><td>{{ v[k] }}</td><td><input type="radio" name="{{v.vraagnummer}}" value="{{ k }}"></td></tr>
+	<tr><td>{{ v[k] }}</td><td><input {{ 'checked="checked"' if responses[v.vraagnummer|string + "_" + v.vraag] == v[k]}} type="radio" name="{{v.vraagnummer}}_{{v.vraag}}" value="{{ v[k] }}"></td></tr>
 	{% endfor %}
 </table>
 {% endif %}
 {% if v.type == "JN" %}
 <table>
 	{% for sq in q[1]%}
-	{% if sq.subvraag == "anders, namelijk:" %}
-	<tr><td>{{ sq.subvraag }}</td><td><textarea name="{{sq.vraagnummer}}"></textarea></td></tr>
+	{% if sq.subvraag|trim == "anders, namelijk:" %}
+	<tr><td>{{ sq.subvraag }} </td><td><textarea name="{{sq.vraagnummer}}_{{sq.vraag}}_{{ sq.subvraag }}_{{ ns.anders }}">{{responses[sq.vraagnummer|string + "_" + sq.vraag + "_" + sq.subvraag + "_" + ns.anders|string]}}</textarea></td></tr>
+		{% set ns.anders = ns.anders + 1 %}
 	{% else %}
-	<tr><td>{{ sq.subvraag }}</td><td><input type="checkbox" name="{{sq.vraagnummer}}" value="{{ sq.subvraag }}"></td></tr>
+	<tr><td>{{ sq.subvraag }}</td><td><input type="checkbox" name="{{sq.vraagnummer}}_{{sq.vraag}}" value="{{ sq.subvraag }}" {{'checked="checked"' if sq.subvraag in responses[sq.vraagnummer|string + "_" + sq.vraag] or []}}\></td></tr>
+		{% set ns.anders = 1 %}
 	{% endif %}
 	{% endfor %}
 </table>
 {% endif %}
 {% if v.type == "1" and q[1]|length > 1 %}
 <table>
+	{% for sq in q[1]%}
+	{% 
+		if "zondagochtenddienst" in sq.vraag or sq.vraagnummer != 13
+			or ("wijkavond" in sq.vraag and "wijkavond" in responses['7_Ik neem min of meer regelmatig deel aan de'])
+			or ("bijbelstudie" in sq.vraag and "bijbelstudie" in responses['7_Ik neem min of meer regelmatig deel aan de'])
+			or ("30-ers groep" in sq.vraag and "30-ersgroep" in responses['7_Ik neem min of meer regelmatig deel aan de'])
+			or ("Exodus bijbelgroep" in sq.vraag and "Exodus Bijbelgroep" in responses['7_Ik neem min of meer regelmatig deel aan de'])
+			or ("eetgroep" in sq.vraag and "Eetgroep" in responses['7_Ik neem min of meer regelmatig deel aan de'])
+			or ("cantorij" in sq.vraag and "Cantorij" in responses['7_Ik neem min of meer regelmatig deel aan de'])
+			or ("praatgroepen" in sq.vraag and "praatgroepen incidenteel" in responses['7_Ik neem min of meer regelmatig deel aan de'])
+			or ("nagesprekken/lunch na de dienst" in sq.vraag and "nagesprek/lunch na de dienst" in responses['7_Ik neem min of meer regelmatig deel aan de'])
+			or ("gemeentevergadering" in sq.vraag and "gemeentevergadering" in responses['7_Ik neem min of meer regelmatig deel aan de'])
+	%}
+    {% if ns.vraagtekst != sq.vraag %}
 	<tr>
-		<td></td>
-		{% for k in v|sort if k > "optie0" and k < "optie99" and v[k] != ""%}
-		<td class="radioinline">{{ v[k] }}</td>
+		<td class="subheader"><i>{{sq.vraag}}</i></td>
+		{% for k in sq|sort if k > "optie0" and k < "optie99" and sq[k] != ""%}
+		<td class="radioinline subheader">{{ sq[k] }}</td>
 		{% endfor %}
 	</tr>
-	{% for sq in q[1]%}
+	{% set ns.vraagtekst = sq.vraag %}
+	{% endif %}
+	{% if sq.subvraag|trim != "" %}
 	<tr>
+	{% if sq.subvraag|trim == "anders, namelijk:" %}
+		<td>{{ sq.subvraag }}<textarea name="{{v.vraagnummer}}_{{sq.vraag}}_{{sq.subvraag}}_{{ns.anders}}_txt">{{responses[v.vraagnummer|string + "_" + sq.vraag + "_" + sq.subvraag + "_" + ns.anders|string + "_txt"]}}</textarea></td>
+		{% for k in v|sort if k > "optie0" and k < "optie99" and v[k] != ""%}
+		<td><input type="radio" name="{{v.vraagnummer}}_{{sq.vraag}}_{{sq.subvraag}}_{{ns.anders}}" value="{{ sq[k] }}" {{ 'checked="checked"' if responses[v.vraagnummer|string + "_" + sq.vraag + "_" + sq.subvraag + "_" + ns.anders|string] == sq[k]}} ></td>
+		{% endfor %}
+		{% set ns.anders = ns.anders + 1 %}
+	{% else %}
 		<td>{{ sq.subvraag }}</td>
 		{% for k in v|sort if k > "optie0" and k < "optie99" and v[k] != ""%}
-		<td><input type="radio" name="{{v.vraagnummer}}" value="{{ k }}"></td>
+		<td><input type="radio" name="{{v.vraagnummer}}_{{sq.vraag}}_{{sq.subvraag|replace('é', 'e')}}" value="{{ sq[k] }}" {{ 'checked="checked"' if responses[v.vraagnummer|string + "_" + sq.vraag + "_" + sq.subvraag|replace('é', 'e')] == sq[k]}} ></td>
 		{% endfor %}
+		{% set ns.anders = 1 %}
+	{% endif %}
 	</tr>
+	{% endif %}
+	{% endif %}
 	{% endfor %}
 </table>
 {% endif %}
-<a href="#{{q[0] - 1}}">Vorige</a><a class="next" href="#{{q[0] + 1}}">Volgende</a>
+<a href="#{{q[0] - 1}}" onclick="dosubmit({{q[0] - 1}})">Vorige</a><a class="next" href="#{{q[0] + 1}}" onclick="dosubmit({{q[0] + 1}})">Volgende</a>
 </div>
 {% endfor %}
 
+<button type="submit">Verzenden</button>
+</form>
+<button onclick="window.print()">Afdrukken</button>
 </body>
 </html>
